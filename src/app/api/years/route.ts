@@ -1,6 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { readdir, readFile } from 'fs/promises';
+import { readdir } from 'fs/promises';
 import { join } from 'path';
+
+// Function to extract year from filename
+function extractYearFromFilename(filename: string): string | null {
+  // Match pattern like "(Février 2025)" and extract the year part
+  const match = filename.match(/\(([^)]+)\)/);
+  if (match) {
+    // Return the full content inside parentheses (e.g., "Février 2025")
+    return match[1];
+  }
+  return null;
+}
 
 export async function GET(request: NextRequest) {
   try {
@@ -10,40 +21,36 @@ export async function GET(request: NextRequest) {
     const files = await readdir(dataDir);
     
     // Filter for JSON files and exclude TypeScript files
-    const jsonFiles = files.filter(file => 
+    const jsonFiles = files.filter(file =>
       file.endsWith('.json') && !file.endsWith('.ts')
     );
     
-    // Collect all unique years from all files
+    // Collect all unique years from filenames
     const allYears = new Set<string>();
     
     for (const filename of jsonFiles) {
       try {
-        const filePath = join(dataDir, filename);
-        const content = await readFile(filePath, 'utf-8');
-        const data = JSON.parse(content);
-        
-        if (Array.isArray(data)) {
-          // Extract years from all questions
-          data.forEach((question: any) => {
-            if (question.YearAsked) {
-              allYears.add(question.YearAsked);
-            }
-          });
+        const year = extractYearFromFilename(filename);
+        if (year) {
+          allYears.add(year);
         }
       } catch (error) {
-        console.error(`Error reading file ${filename}:`, error);
+        console.error(`Error processing filename ${filename}:`, error);
       }
     }
     
     // Convert to array and sort
     const yearsArray = Array.from(allYears).sort((a, b) => {
-      // Sort numerically if possible, otherwise alphabetically
-      const aNum = parseInt(a);
-      const bNum = parseInt(b);
-      if (!isNaN(aNum) && !isNaN(bNum)) {
+      // Try to extract numeric year for sorting
+      const aMatch = a.match(/(\d{4})/);
+      const bMatch = b.match(/(\d{4})/);
+      
+      if (aMatch && bMatch) {
+        const aNum = parseInt(aMatch[1]);
+        const bNum = parseInt(bMatch[1]);
         return bNum - aNum; // Descending order for years
       }
+      
       return a.localeCompare(b);
     });
     

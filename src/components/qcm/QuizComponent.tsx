@@ -237,18 +237,18 @@ export function QuizComponent({ questions, quizFile, onBackToSelection }: QuizCo
   };
 
   const handleNext = () => {
-    // Require verification before moving to next question
-    if (!hasVerifiedCurrentQuestion) {
-      // Check if user has answered anything
-      const currentAnswers = userAnswers.get(currentQuestionIndex) || [];
-      if (currentAnswers.length > 0) {
-        // User has answered but not verified - show feedback
-        setShowFeedback(true);
-        return;
-      }
-      // User hasn't answered anything, allow to proceed
+    // Check if user has answered anything
+    const currentAnswers = userAnswers.get(currentQuestionIndex) || [];
+    
+    if (currentAnswers.length > 0 && !hasVerifiedCurrentQuestion) {
+      // User has answered but not verified - verify and show feedback
+      checkAndMarkIncorrectAnswer(currentQuestionIndex, userAnswers);
+      setHasVerifiedCurrentQuestion(true);
+      setShowFeedback(true);
+      return;
     }
 
+    // Move to next question or end quiz
     setShowFeedback(false);
     setHasVerifiedCurrentQuestion(false); // Reset for next question
     
@@ -262,7 +262,15 @@ export function QuizComponent({ questions, quizFile, onBackToSelection }: QuizCo
   const handlePrevious = () => {
     if (currentQuestionIndex > 0) {
       setShowFeedback(false);
-      setCurrentQuestionIndex(currentQuestionIndex - 1);
+      setHasVerifiedCurrentQuestion(false);
+      
+      // Reset answers for the previous question
+      const prevQuestionIndex = currentQuestionIndex - 1;
+      const newAnswers = new Map(userAnswers);
+      newAnswers.delete(prevQuestionIndex);
+      setUserAnswers(newAnswers);
+      
+      setCurrentQuestionIndex(prevQuestionIndex);
     }
   };
 
@@ -297,6 +305,11 @@ export function QuizComponent({ questions, quizFile, onBackToSelection }: QuizCo
     setCurrentQuestionIndex(questionIndex);
     setShowFeedback(false);
     setHasVerifiedCurrentQuestion(false);
+    
+    // Reset answers for the question we're navigating to
+    const newAnswers = new Map(userAnswers);
+    newAnswers.delete(questionIndex);
+    setUserAnswers(newAnswers);
   };
 
   const getQuestionStatus = (questionIndex: number) => {
@@ -381,19 +394,19 @@ export function QuizComponent({ questions, quizFile, onBackToSelection }: QuizCo
       let explanation = '';
       switch (choice) {
         case 'A':
-          explanation = question.Choice_A_Explanation;
+          explanation = question.Choice_A_Explanation || '';
           break;
         case 'B':
-          explanation = question.Choice_B_Explanation;
+          explanation = question.Choice_B_Explanation || '';
           break;
         case 'C':
-          explanation = question.Choice_C_Explanation;
+          explanation = question.Choice_C_Explanation || '';
           break;
         case 'D':
-          explanation = question.Choice_D_Explanation;
+          explanation = question.Choice_D_Explanation || '';
           break;
         case 'E':
-          explanation = question.Choice_E_Explanation;
+          explanation = question.Choice_E_Explanation || '';
           break;
       }
       if (explanation.trim() !== '') {
@@ -406,7 +419,7 @@ export function QuizComponent({ questions, quizFile, onBackToSelection }: QuizCo
       userChoices,
       correctChoices,
       explanations: explanations.join('\n\n'),
-      overallExplanation: question.OverallExplanation
+      overallExplanation: question.OverallExplanation || ''
     };
   };
 
@@ -500,7 +513,7 @@ export function QuizComponent({ questions, quizFile, onBackToSelection }: QuizCo
         question={currentQuestion}
         questionNumber={currentQuestionIndex + 1}
         totalQuestions={questions.length}
-        userAnswers={Array.isArray(userAnswers.get(currentQuestionIndex)) ? userAnswers.get(currentQuestionIndex) : []}
+        userAnswers={userAnswers.get(currentQuestionIndex) || []}
         onAnswerChange={handleAnswerChange}
         showResult={showFeedback}
         feedback={showFeedback ? getCurrentAnswerFeedback() : null}
@@ -531,44 +544,13 @@ export function QuizComponent({ questions, quizFile, onBackToSelection }: QuizCo
         </div>
         
         <div className="flex gap-2">
-          <Button
-            onClick={() => {
-              setQuizCompleted(true);
-            }}
-            variant="outline"
-            className="border-red-300 text-red-600 hover:bg-red-50 dark:border-red-600 dark:text-red-400 dark:hover:bg-red-900/20"
-          >
-            Terminer l'entraînement
-          </Button>
-          
-          {userAnswers.has(currentQuestionIndex) && userAnswers.get(currentQuestionIndex)!.length > 0 && !showFeedback && (
-            <Button
-              onClick={handleVerifyAnswer}
-              className="bg-gradient-to-r from-blue-600 to-emerald-600 hover:from-blue-700 hover:to-emerald-700 text-white font-medium shadow-lg hover:shadow-xl transition-all duration-300 disabled:from-gray-400 disabled:to-gray-500"
-              disabled={hasVerifiedCurrentQuestion}
-            >
-              <div className="flex items-center gap-2">
-                {hasVerifiedCurrentQuestion ? (
-                  <>
-                    <span>✓</span>
-                    Réponse vérifiée
-                  </>
-                ) : (
-                  <>
-                    <span>🩺</span>
-                    Vérifier la réponse
-                  </>
-                )}
-              </div>
-            </Button>
-          )}
-          
           {currentQuestionIndex < questions.length - 1 ? (
             <Button
               onClick={handleNext}
               className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-medium shadow-lg hover:shadow-xl transition-all duration-300"
             >
-              Question suivante
+              {showFeedback ? "Question suivante" :
+               (userAnswers.has(currentQuestionIndex) && userAnswers.get(currentQuestionIndex)!.length > 0) ? "Vérifier la réponse" : "Question suivante"}
             </Button>
           ) : (
             <Button
