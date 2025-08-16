@@ -1,8 +1,8 @@
-# [Project Name]: A Medical School Multiple-Choice Question Bank
+# projectFMPA: A Medical School Multiple-Choice Question Bank
 
 ## Description
 
-This project is a community-driven initiative from [Your Medical School/Institution Name] to create a high-quality, open-source question bank of multiple-choice questions (MCQs) for medical students. Our goal is to provide a free and accessible resource to supplement medical education and aid in exam preparation. The questions cover a wide range of medical subjects and are designed to test foundational knowledge and clinical reasoning. [3]
+This project is a community-driven initiative from a student to create a high-quality, open-source question bank of multiple-choice questions (MCQs) for medical students. Our goal is to provide a free and accessible resource to supplement medical education and aid in exam preparation. The questions cover a wide range of medical subjects and are designed to test foundational knowledge and clinical reasoning. [3]
 
 This resource is intended for:
 *   Medical students preparing for examinations.
@@ -27,7 +27,7 @@ The multiple-choice questions provided here are intended for self-assessment and
 
 ## ✨ Features
 
-*   **Comprehensive Coverage:** Questions spanning various medical disciplines, including [List of subjects, e.g., Anatomy, Physiology, Pathology, etc.]. [16]
+*   **Comprehensive Coverage:** Questions spanning various medical disciplines, including Anatomy, Physiology, Pathology, etc. [16]
 *   **Detailed Explanations:** Each question is accompanied by a clear rationale for the correct answer and explanations for why other options are incorrect.
 *   **Community-Driven:** A growing database of questions contributed and reviewed by medical students, residents, and faculty.
 *   **Open Source:** Free to use, modify, and distribute under the specified license.
@@ -43,9 +43,6 @@ The questions and explanations in this repository are created based on establish
 ---
 
 ## 🚀 Installation and Usage
-
-[Provide clear, step-by-step instructions on how to get the project running. This could include:]
-
 **1. Cloning the repository:**
 ```bash
-git clone https://github.com/your-username/your-project-name.git
+git clone https://github.com/idrissiziad/projectFMPA-stable.git
