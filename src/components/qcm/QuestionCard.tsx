@@ -7,6 +7,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Question, Choice } from '@/types/question';
+import { Stethoscope, Brain, Heart, Activity } from 'lucide-react';
 
 interface QuestionCardProps {
   question: Question;
@@ -110,47 +111,63 @@ export function QuestionCard({
   };
 
   return (
-    <Card className="w-full max-w-4xl mx-auto dark:bg-gray-800">
-      <CardHeader>
+    <Card className="w-full max-w-4xl mx-auto dark:bg-slate-800 border-2 border-blue-200 dark:border-blue-700 shadow-lg">
+      <CardHeader className="bg-gradient-to-r from-blue-50 to-emerald-50 dark:from-blue-900/20 dark:to-emerald-900/20 pb-4">
         <div className="flex justify-between items-start">
-          <div>
-            <CardTitle className="text-xl font-bold text-gray-900 dark:text-white">
-              Question {questionNumber} sur {totalQuestions}
-            </CardTitle>
-            <CardDescription className="mt-2">
-              <Badge variant="outline" className="dark:bg-gray-700 dark:text-gray-300">{question.YearAsked}</Badge>
-              <Badge variant="secondary" className="ml-2 dark:bg-gray-700 dark:text-gray-300">{question.Subtopic}</Badge>
-            </CardDescription>
+          <div className="flex items-center gap-3">
+            <div className="bg-blue-600 text-white p-2 rounded-lg">
+              <Stethoscope className="h-5 w-5" />
+            </div>
+            <div>
+              <CardTitle className="text-xl font-bold text-gray-900 dark:text-white">
+                Question {questionNumber} sur {totalQuestions}
+              </CardTitle>
+              <CardDescription className="mt-2">
+                <Badge variant="outline" className="bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-600">
+                  {question.YearAsked}
+                </Badge>
+                <Badge variant="secondary" className="ml-2 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300">
+                  {question.Subtopic}
+                </Badge>
+              </CardDescription>
+            </div>
+          </div>
+          <div className="bg-blue-100 dark:bg-blue-900/30 p-2 rounded-lg">
+            <Activity className="h-5 w-5 text-blue-600 dark:text-blue-400" />
           </div>
         </div>
       </CardHeader>
       
-      <CardContent className="space-y-6">
-        <div className="text-lg font-medium leading-relaxed text-gray-900 dark:text-white">
+      <CardContent className="space-y-6 pt-6">
+        <div className="text-lg font-medium leading-relaxed text-gray-900 dark:text-white bg-slate-50 dark:bg-slate-700/50 p-4 rounded-lg border-l-4 border-blue-500">
           {question.QuestionText}
         </div>
         
         <div className="space-y-3" key={shuffleKey}>
           {displayChoices.map((choice) => (
             <div key={choice.id} className="space-y-2">
-              <div className={`flex items-start space-x-3 p-3 rounded-lg border hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors ${getChoiceStyle(choice.id)}`}>
-                <Checkbox
-                  id={`choice-${choice.id}`}
-                  checked={safeUserAnswers.includes(choice.id)}
-                  onCheckedChange={(checked) => onAnswerChange(choice.id, checked as boolean)}
-                  disabled={showResult}
-                  className="mt-1"
-                />
+              <div className={`flex items-start space-x-3 p-4 rounded-lg border-2 transition-all duration-200 hover:shadow-md ${
+                getChoiceStyle(choice.id) || 'border-gray-200 dark:border-gray-600 hover:border-blue-300 dark:hover:border-blue-500 hover:bg-blue-50/50 dark:hover:bg-blue-900/20'
+              }`}>
+                <div className="flex items-center h-5 mt-1">
+                  <Checkbox
+                    id={`choice-${choice.id}`}
+                    checked={safeUserAnswers.includes(choice.id)}
+                    onCheckedChange={(checked) => onAnswerChange(choice.id, checked as boolean)}
+                    disabled={showResult}
+                    className="data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
+                  />
+                </div>
                 <Label
                   htmlFor={`choice-${choice.id}`}
                   className="flex-1 cursor-pointer leading-relaxed"
                 >
                   <div className="flex items-center justify-between">
                     <span className="font-medium text-gray-900 dark:text-white">
-                      {choice.id}. {choice.text}
+                      {choice.text}
                     </span>
                     {getChoiceIcon(choice.id) && (
-                      <span className={`text-lg font-bold ${
+                      <span className={`text-xl font-bold ${
                         choice.isCorrect === true ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
                       }`}>
                         {getChoiceIcon(choice.id)}
@@ -162,21 +179,33 @@ export function QuestionCard({
               
               {/* Show explanation under the choice if it's selected and we're showing results */}
               {showResult && safeUserAnswers.includes(choice.id) && choice.explanation && choice.explanation.trim() !== '' && (
-                <div className={`ml-12 p-3 rounded-lg text-sm ${
+                <div className={`ml-14 p-4 rounded-xl text-sm border-l-4 ${
                   choice.isCorrect === true 
-                    ? 'bg-green-100 text-green-800 border border-green-200 dark:bg-green-900/30 dark:text-green-300 dark:border-green-700' 
-                    : 'bg-red-100 text-red-800 border border-red-200 dark:bg-red-900/30 dark:text-red-300 dark:border-red-700'
+                    ? 'bg-green-50 text-green-800 border-green-400 dark:bg-green-900/30 dark:text-green-300 dark:border-green-600' 
+                    : 'bg-red-50 text-red-800 border-red-400 dark:bg-red-900/30 dark:text-red-300 dark:border-red-600'
                 }`}>
-                  <span className="font-semibold">
-                    {choice.isCorrect === true ? '✓ Correct' : '✗ Incorrect'} :
-                  </span> <span dangerouslySetInnerHTML={{ __html: choice.explanation }} />
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className={`font-bold text-lg ${
+                      choice.isCorrect === true ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
+                    }`}>
+                      {choice.isCorrect === true ? '✓' : '✗'}
+                    </span>
+                    <span className="font-semibold">
+                      {choice.isCorrect === true ? 'Réponse Correcte' : 'Réponse Incorrecte'}
+                    </span>
+                  </div>
+                  <div className="text-gray-700 dark:text-gray-300" dangerouslySetInnerHTML={{ __html: choice.explanation }} />
                 </div>
               )}
               
               {/* Show explanation for correct choices that weren't selected */}
               {showResult && !safeUserAnswers.includes(choice.id) && choice.isCorrect === true && choice.explanation && choice.explanation.trim() !== '' && (
-                <div className="ml-12 p-3 rounded-lg text-sm bg-yellow-100 text-yellow-800 border border-yellow-200 dark:bg-yellow-900/30 dark:text-yellow-300 dark:border-yellow-700">
-                  <span className="font-semibold">💡 Manqué :</span> <span dangerouslySetInnerHTML={{ __html: choice.explanation }} />
+                <div className="ml-14 p-4 rounded-xl text-sm bg-yellow-50 text-yellow-800 border-l-4 border-yellow-400 dark:bg-yellow-900/30 dark:text-yellow-300 dark:border-yellow-600">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="font-bold text-lg text-yellow-600 dark:text-yellow-400">💡</span>
+                    <span className="font-semibold">Option Manquée</span>
+                  </div>
+                  <div className="text-gray-700 dark:text-gray-300" dangerouslySetInnerHTML={{ __html: choice.explanation }} />
                 </div>
               )}
             </div>

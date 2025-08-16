@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { QuizFile, getAvailableQuizFiles } from '@/data/quiz-loader';
-import { Heart, Stethoscope, Brain, Activity, Pill, Microscope, FileText, Code, Database, Globe, Shield, Network } from 'lucide-react';
+import { Heart, Stethoscope, Brain, Activity, Pill, Microscope, FileText, Code, Database, Globe, Shield, Network, User, GraduationCap, Hospital } from 'lucide-react';
 
 interface FileSelectorProps {
   onFileSelect: (fileId: string) => void;
@@ -82,22 +82,41 @@ export function FileSelector({ onFileSelect }: FileSelectorProps) {
     <div className="container mx-auto p-4 max-w-6xl">
       <div className="text-center mb-8">
         <div className="flex items-center justify-center gap-3 mb-4">
-          <FileText className="h-10 w-10 text-blue-500" />
-          <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
-            ProjectFMPA
-          </h1>
-          <Activity className="h-10 w-10 text-green-500" />
+          <div>
+            <Stethoscope className="h-12 w-12 text-blue-600" />
+          </div>
+          <div>
+            <h1 className="text-5xl font-bold bg-gradient-to-r from-blue-800 via-emerald-600 to-teal-600 bg-clip-text text-transparent mb-1">
+              ProjectFMPA
+            </h1>
+            <p className="text-sm text-blue-600 dark:text-blue-400 font-medium">
+              Excellence Médicale - Réussite Assurée
+            </p>
+          </div>
+          <div>
+            <Heart className="h-12 w-12 text-red-500" />
+          </div>
         </div>
-        <p className="text-lg text-gray-600 dark:text-gray-300 mb-4">
-          Plateforme d'entraînement aux questions
+        <p className="text-lg text-gray-700 dark:text-gray-300 mb-4 font-medium">
+          Plateforme d'entraînement médicale aux QCM
         </p>
-        <p className="text-base text-gray-500 dark:text-gray-400 mb-6">
-          Choisissez un fichier de questions pour commencer votre entraînement
+        <p className="text-base text-gray-600 dark:text-gray-400 mb-6">
+          Préparez-vous efficacement aux examens de faculté de médecine avec notre système de questions à choix multiples
         </p>
-        <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 max-w-2xl mx-auto">
-          <p className="text-blue-800 dark:text-blue-200 text-sm">
-            <strong>💡 Astuce :</strong> {quizFiles.length} fichier(s) de questions disponible(s) dans le dossier src/data
-          </p>
+        <div className="bg-gradient-to-r from-blue-100 to-emerald-100 dark:from-blue-900/30 dark:to-emerald-900/30 border border-blue-200 dark:border-blue-700 rounded-xl p-6 max-w-3xl mx-auto shadow-lg">
+          <div className="flex items-start gap-3">
+            <div className="bg-blue-600 text-white p-2 rounded-lg">
+              <GraduationCap className="h-5 w-5" />
+            </div>
+            <div className="text-left">
+              <p className="text-blue-800 dark:text-blue-200 font-semibold mb-1">
+                Ressources Pédagogiques Médicales
+              </p>
+              <p className="text-blue-700 dark:text-blue-300 text-sm">
+                {quizFiles.length} fichier(s) d'entraînement disponible(s) couvrant diverses spécialités médicales
+              </p>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -105,59 +124,66 @@ export function FileSelector({ onFileSelect }: FileSelectorProps) {
         {quizFiles.map((file) => (
           <Card
             key={file.id}
-            className={`cursor-pointer transition-all hover:shadow-lg ${
+            className={`cursor-pointer transition-all hover:shadow-xl border-2 ${
               selectedFile === file.id
-                ? 'ring-2 ring-blue-500 bg-blue-50 dark:bg-blue-900/20'
-                : 'hover:bg-gray-50 dark:hover:bg-gray-800'
+                ? 'border-blue-500 bg-gradient-to-br from-blue-50 to-emerald-50 dark:from-blue-900/20 dark:to-emerald-900/20 shadow-lg'
+                : 'border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-600 hover:bg-blue-50/50 dark:hover:bg-blue-900/10'
             }`}
             onClick={() => handleFileSelect(file.id)}
           >
-            <CardHeader>
+            <CardHeader className="pb-3">
               <div className="flex justify-between items-start">
-                <div className="flex items-center gap-2">
-                  {getFileIcon(file.filename)}
-                  <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white">
-                    {file.name}
-                  </CardTitle>
+                <div className="flex items-center gap-3">
+                  <div className="bg-blue-100 dark:bg-blue-900/30 p-2 rounded-lg">
+                    {getFileIcon(file.filename)}
+                  </div>
+                  <div className="flex-1">
+                    <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white leading-tight">
+                      {file.name}
+                    </CardTitle>
+                  </div>
                 </div>
                 {selectedFile === file.id && (
-                  <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
-                    <span className="text-white text-sm">✓</span>
+                  <div className="bg-green-500 text-white p-1 rounded-full">
+                    <span className="text-xs font-bold">✓</span>
                   </div>
                 )}
               </div>
-              <CardDescription className="text-sm text-gray-600 dark:text-gray-400">
+              <CardDescription className="text-sm text-gray-600 dark:text-gray-400 mt-2">
                 {file.description}
               </CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="pt-0">
               <div className="space-y-3">
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600 dark:text-gray-400">Questions :</span>
-                  <Badge variant="outline" className="dark:bg-gray-800 dark:text-gray-300">
+                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Questions :</span>
+                  <Badge variant="outline" className="bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-600">
                     {file.questionCount}
                   </Badge>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600 dark:text-gray-400">Catégorie :</span>
-                  <Badge variant="secondary" className="dark:bg-gray-800 dark:text-gray-300">
+                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Spécialité :</span>
+                  <Badge variant="secondary" className="bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-300">
                     {file.category}
                   </Badge>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600 dark:text-gray-400">Format :</span>
-                  <Badge variant="outline" className="dark:bg-gray-800 dark:text-gray-300">
-                    JSON
+                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Format :</span>
+                  <Badge variant="outline" className="bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-300">
+                    QCM
                   </Badge>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600 dark:text-gray-400">Taille :</span>
-                  <span className="text-xs text-gray-500 dark:text-gray-400">
-                    {file.fileSize > 1024 
-                      ? `${(file.fileSize / 1024).toFixed(1)} KB` 
-                      : `${file.fileSize} B`
-                    }
-                  </span>
+                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Difficulté :</span>
+                  <div className="flex gap-1">
+                    {[...Array(3)].map((_, i) => (
+                      <div key={i} className={`w-2 h-2 rounded-full ${
+                        i < Math.min(3, Math.ceil(file.questionCount / 10)) 
+                          ? 'bg-blue-500' 
+                          : 'bg-gray-300 dark:bg-gray-600'
+                      }`}></div>
+                    ))}
+                  </div>
                 </div>
               </div>
             </CardContent>
@@ -170,13 +196,23 @@ export function FileSelector({ onFileSelect }: FileSelectorProps) {
           onClick={handleStartQuiz}
           disabled={!selectedFile}
           size="lg"
-          className="px-8 bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700"
+          className="px-12 py-4 bg-gradient-to-r from-blue-600 to-emerald-600 hover:from-blue-700 hover:to-emerald-700 dark:from-blue-600 dark:to-emerald-600 dark:hover:from-blue-700 dark:hover:to-emerald-700 text-white font-semibold text-lg shadow-lg hover:shadow-xl transition-all duration-300 disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed"
         >
-          {selectedFile 
-            ? `Commencer l'entraînement : ${quizFiles.find(f => f.id === selectedFile)?.name}` 
-            : 'Sélectionnez un fichier pour commencer'
-          }
+          <div className="flex items-center gap-2">
+            <Stethoscope className="h-5 w-5" />
+            {selectedFile 
+              ? `Commencer l'entraînement médical`
+              : 'Sélectionnez une spécialité médicale'
+            }
+          </div>
         </Button>
+        {selectedFile && (
+          <p className="mt-3 text-sm text-gray-600 dark:text-gray-400">
+            Spécialité sélectionnée : <span className="font-semibold text-blue-600 dark:text-blue-400">
+              {quizFiles.find(f => f.id === selectedFile)?.name}
+            </span>
+          </p>
+        )}
       </div>
     </div>
   );
