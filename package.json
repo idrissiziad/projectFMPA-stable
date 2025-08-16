@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "nodemon --exec \"npx tsx server.ts\" --watch server.ts --watch src --ext ts,tsx,js,jsx 2>&1 | tee dev.log",
+    "build:next": "next build",
     "build": "npx @cloudflare/next-on-pages",
     "start": "NODE_ENV=production tsx server.ts 2>&1 | tee server.log",
     "lint": "next lint",
@@ -11,8 +12,9 @@
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
     "db:reset": "prisma migrate reset",
-    "deploy:cf": "next build && wrangler pages deploy .vercel/output/static",
-    "deploy:cf:assets": "echo \"This script is no longer needed with next-on-pages\""
+    "deploy:cf": "npm run build:next && wrangler pages deploy .vercel/output/static",
+    "deploy:cf:assets": "echo \"This script is no longer needed with next-on-pages\"",
+    "deploy:vercel": "npm run build:next && vercel --prod"
   },
   "dependencies": {
     "@cloudflare/next-on-pages": "^1.13.13",

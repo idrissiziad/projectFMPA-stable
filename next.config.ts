@@ -22,7 +22,18 @@ const nextConfig: NextConfig = {
     ignoreDuringBuilds: true,
   },
   // Cloudflare Workers specific configuration
-  serverExternalPackages: []
+  serverExternalPackages: [],
+  // Vercel specific configuration
+  experimental: {
+    serverComponentsExternalPackages: [],
+  },
+  // Enable static optimization for better performance on Vercel
+  swcMinify: true,
+  // Configure images for Vercel
+  images: {
+    domains: [],
+    unoptimized: false,
+  },
 };
 
 export default nextConfig;
