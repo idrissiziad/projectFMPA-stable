@@ -567,9 +567,9 @@
     "YearAsked": "Février 2025 (Normale)"
   },
   {
-    "Choice_A_Explanation": "Le plancher du troisième ventricule est la paroi inférieure de cette cavité; il n'est pas la cavité elle-même, qui est l'espace interthalamique rempli de LCS.",
+    "Choice_A_Explanation": "Le plancher du troisième ventricule est la paroi inférieure de cette cavité; il n'est pas la cavité elle-même, qui est l'espace interthalamique rempli de LCS (cette justification est la seule que j'ai trouvé).",
     "Choice_A_Text": "Est une cavité liquidienne interthalamique.",
-    "Choice_A_isCorrect": false,
+    "Choice_A_isCorrect": true,
     "Choice_B_Explanation": "Les tubercules (ou corps) mamillaires, qui font partie du circuit de la mémoire, forment un relief sur la partie postérieure du plancher du troisième ventricule.",
     "Choice_B_Text": "Les tubercules mamillaires font partie de ses structures anatomiques.",
     "Choice_B_isCorrect": true,
