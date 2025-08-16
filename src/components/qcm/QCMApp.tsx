@@ -18,7 +18,7 @@ export function QCMApp({ onBackToHome }: QCMAppProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleFileSelect = async (fileId: string) => {
+  const handleFileSelect = async (fileId: string, year?: string) => {
     setLoading(true);
     setError(null);
     
@@ -31,8 +31,8 @@ export function QCMApp({ onBackToHome }: QCMAppProps) {
         throw new Error('Fichier non trouvé');
       }
 
-      // Load the questions dynamically
-      const questionsData = await loadQuizQuestions(selectedQuizFile.filename);
+      // Load the questions dynamically with optional year filter
+      const questionsData = await loadQuizQuestions(selectedQuizFile.filename, year);
       setQuestions(questionsData);
       setSelectedFile(selectedQuizFile.filename);
     } catch (err) {
@@ -51,7 +51,7 @@ export function QCMApp({ onBackToHome }: QCMAppProps) {
 
   if (loading) {
     return (
-      <div className="container mx-auto p-4 text-center">
+      <div className="container mx-auto p-4 text-center min-h-screen flex items-center justify-center">
         <div className="flex flex-col items-center justify-center min-h-[400px]">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-4"></div>
           <p className="text-lg text-gray-600 dark:text-gray-300">Chargement des questions...</p>
@@ -62,7 +62,7 @@ export function QCMApp({ onBackToHome }: QCMAppProps) {
 
   if (error) {
     return (
-      <div className="container mx-auto p-4 text-center">
+      <div className="container mx-auto p-4 text-center min-h-screen flex items-center justify-center">
         <div className="max-w-md mx-auto">
           <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-6">
             <h2 className="text-xl font-semibold text-red-800 dark:text-red-200 mb-4">Erreur</h2>

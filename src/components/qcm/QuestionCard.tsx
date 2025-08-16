@@ -16,6 +16,14 @@ interface QuestionCardProps {
   userAnswers: string[]; // Changed to array for multiple selections
   onAnswerChange: (choiceId: string, checked: boolean) => void;
   showResult?: boolean;
+  feedback?: {
+    isCorrect: boolean | null;
+    userChoices: string[];
+    correctChoices: string[];
+    explanations: string;
+    overallExplanation: string;
+  } | null;
+  onValidateIncorrect?: () => void;
 }
 
 export function QuestionCard({
@@ -24,7 +32,9 @@ export function QuestionCard({
   totalQuestions,
   userAnswers,
   onAnswerChange,
-  showResult = false
+  showResult = false,
+  feedback = null,
+  onValidateIncorrect
 }: QuestionCardProps) {
   // Ensure userAnswers is always an array
   const safeUserAnswers = Array.isArray(userAnswers) ? userAnswers : [];
@@ -36,12 +46,12 @@ export function QuestionCard({
 
   // Create original choices array
   const createOriginalChoices = (): Choice[] => [
-    { id: 'A', text: question.Choice_A_Text, isCorrect: question.Choice_A_isCorrect, explanation: question.Choice_A_Explanation },
-    { id: 'B', text: question.Choice_B_Text, isCorrect: question.Choice_B_isCorrect, explanation: question.Choice_B_Explanation },
-    { id: 'C', text: question.Choice_C_Text, isCorrect: question.Choice_C_isCorrect, explanation: question.Choice_C_Explanation },
-    { id: 'D', text: question.Choice_D_Text, isCorrect: question.Choice_D_isCorrect, explanation: question.Choice_D_Explanation },
-    { id: 'E', text: question.Choice_E_Text, isCorrect: question.Choice_E_isCorrect, explanation: question.Choice_E_Explanation },
-  ].filter(choice => choice.text.trim() !== '');
+    { id: 'A', text: question.Choice_A_Text || '', isCorrect: question.Choice_A_isCorrect, explanation: question.Choice_A_Explanation || '' },
+    { id: 'B', text: question.Choice_B_Text || '', isCorrect: question.Choice_B_isCorrect, explanation: question.Choice_B_Explanation || '' },
+    { id: 'C', text: question.Choice_C_Text || '', isCorrect: question.Choice_C_isCorrect, explanation: question.Choice_C_Explanation || '' },
+    { id: 'D', text: question.Choice_D_Text || '', isCorrect: question.Choice_D_isCorrect, explanation: question.Choice_D_Explanation || '' },
+    { id: 'E', text: question.Choice_E_Text || '', isCorrect: question.Choice_E_isCorrect, explanation: question.Choice_E_Explanation || '' },
+  ].filter(choice => choice.text && choice.text.trim() !== '');
 
   // Function to shuffle array using Fisher-Yates algorithm
   const shuffleArray = <T,>(array: T[]): T[] => {
@@ -111,43 +121,38 @@ export function QuestionCard({
   };
 
   return (
-    <Card className="w-full max-w-4xl mx-auto dark:bg-slate-800 border-2 border-blue-200 dark:border-blue-700 shadow-lg">
-      <CardHeader className="bg-gradient-to-r from-blue-50 to-emerald-50 dark:from-blue-900/20 dark:to-emerald-900/20 pb-4">
-        <div className="flex justify-between items-start">
-          <div className="flex items-center gap-3">
-            <div className="bg-blue-600 text-white p-2 rounded-lg">
-              <Stethoscope className="h-5 w-5" />
-            </div>
-            <div>
-              <CardTitle className="text-xl font-bold text-gray-900 dark:text-white">
-                Question {questionNumber} sur {totalQuestions}
-              </CardTitle>
-              <CardDescription className="mt-2">
-                <Badge variant="outline" className="bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-600">
-                  {question.YearAsked}
+    <Card className="w-full max-w-4xl mx-auto dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm">
+      <CardContent className="p-6 space-y-6">
+        {/* Question Header - Simplified */}
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="bg-blue-100 dark:bg-blue-900/30 p-2 rounded-lg">
+                <Stethoscope className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+              </div>
+              <div className="flex items-center gap-2">
+                <Badge variant="outline" className="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-600">
+                  {question.YearAsked || 'Année non spécifiée'}
                 </Badge>
-                <Badge variant="secondary" className="ml-2 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300">
-                  {question.Subtopic}
+                <Badge variant="secondary" className="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300">
+                  {question.Subtopic || 'Sujet non spécifié'}
                 </Badge>
-              </CardDescription>
+              </div>
             </div>
           </div>
-          <div className="bg-blue-100 dark:bg-blue-900/30 p-2 rounded-lg">
-            <Activity className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+          
+          {/* Question Text - Clean and Simple */}
+          <div className="text-lg font-medium leading-relaxed text-gray-900 dark:text-white p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+            {question.QuestionText || 'Question text not available'}
           </div>
-        </div>
-      </CardHeader>
-      
-      <CardContent className="space-y-6 pt-6">
-        <div className="text-lg font-medium leading-relaxed text-gray-900 dark:text-white bg-slate-50 dark:bg-slate-700/50 p-4 rounded-lg border-l-4 border-blue-500">
-          {question.QuestionText}
         </div>
         
+        {/* Choices - Simplified */}
         <div className="space-y-3" key={shuffleKey}>
           {displayChoices.map((choice) => (
             <div key={choice.id} className="space-y-2">
-              <div className={`flex items-start space-x-3 p-4 rounded-lg border-2 transition-all duration-200 hover:shadow-md ${
-                getChoiceStyle(choice.id) || 'border-gray-200 dark:border-gray-600 hover:border-blue-300 dark:hover:border-blue-500 hover:bg-blue-50/50 dark:hover:bg-blue-900/20'
+              <div className={`flex items-start space-x-3 p-4 rounded-lg border transition-all duration-200 ${
+                getChoiceStyle(choice.id) || 'border-gray-200 dark:border-gray-600 hover:border-blue-300 dark:hover:border-blue-500 hover:bg-gray-50/50 dark:hover:bg-gray-700/20'
               }`}>
                 <div className="flex items-center h-5 mt-1">
                   <Checkbox
@@ -177,40 +182,77 @@ export function QuestionCard({
                 </Label>
               </div>
               
-              {/* Show explanation under the choice if it's selected and we're showing results */}
+              {/* Choice explanation - Integrated */}
               {showResult && safeUserAnswers.includes(choice.id) && choice.explanation && choice.explanation.trim() !== '' && (
-                <div className={`ml-14 p-4 rounded-xl text-sm border-l-4 ${
+                <div className={`p-3 rounded-lg text-sm border-l-4 ${
                   choice.isCorrect === true 
                     ? 'bg-green-50 text-green-800 border-green-400 dark:bg-green-900/30 dark:text-green-300 dark:border-green-600' 
                     : 'bg-red-50 text-red-800 border-red-400 dark:bg-red-900/30 dark:text-red-300 dark:border-red-600'
                 }`}>
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className={`font-bold text-lg ${
-                      choice.isCorrect === true ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
-                    }`}>
-                      {choice.isCorrect === true ? '✓' : '✗'}
-                    </span>
-                    <span className="font-semibold">
-                      {choice.isCorrect === true ? 'Réponse Correcte' : 'Réponse Incorrecte'}
-                    </span>
-                  </div>
-                  <div className="text-gray-700 dark:text-gray-300" dangerouslySetInnerHTML={{ __html: choice.explanation }} />
+                  <div className="text-gray-700 dark:text-gray-300" dangerouslySetInnerHTML={{ __html: choice.explanation.replace(/\n/g, '<br>') }} />
                 </div>
               )}
               
-              {/* Show explanation for correct choices that weren't selected */}
+              {/* Missed correct choice explanation */}
               {showResult && !safeUserAnswers.includes(choice.id) && choice.isCorrect === true && choice.explanation && choice.explanation.trim() !== '' && (
-                <div className="ml-14 p-4 rounded-xl text-sm bg-yellow-50 text-yellow-800 border-l-4 border-yellow-400 dark:bg-yellow-900/30 dark:text-yellow-300 dark:border-yellow-600">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="font-bold text-lg text-yellow-600 dark:text-yellow-400">💡</span>
-                    <span className="font-semibold">Option Manquée</span>
-                  </div>
-                  <div className="text-gray-700 dark:text-gray-300" dangerouslySetInnerHTML={{ __html: choice.explanation }} />
+                <div className="p-3 rounded-lg text-sm bg-yellow-50 text-yellow-800 border-l-4 border-yellow-400 dark:bg-yellow-900/30 dark:text-yellow-300 dark:border-yellow-600">
+                  <div className="text-gray-700 dark:text-gray-300" dangerouslySetInnerHTML={{ __html: choice.explanation.replace(/\n/g, '<br>') }} />
                 </div>
               )}
             </div>
           ))}
         </div>
+
+        {/* Integrated Feedback Section */}
+        {feedback && (
+          <div className="space-y-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+            {/* Result Summary */}
+            <div className={`text-center p-4 rounded-lg border ${
+              feedback.isCorrect === true 
+                ? 'bg-green-50 border-green-200 dark:bg-green-900/20 dark:border-green-600' 
+                : 'bg-red-50 border-red-200 dark:bg-red-900/20 dark:border-red-600'
+            }`}>
+              <div className="flex items-center justify-center gap-2">
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-lg font-bold ${
+                  feedback.isCorrect === true 
+                    ? 'bg-green-500 text-white' 
+                    : 'bg-red-500 text-white'
+                }`}>
+                  {feedback.isCorrect === true ? '✓' : '✗'}
+                </div>
+                <span className={`font-semibold ${
+                  feedback.isCorrect === true ? 'text-green-800 dark:text-green-200' : 'text-red-800 dark:text-red-200'
+                }`}>
+                  {feedback.isCorrect === true ? 'Excellent !' : 'À revoir'}
+                </span>
+              </div>
+            </div>
+
+            {/* Overall Explanation */}
+            {feedback.overallExplanation && (
+              <div className="p-4 rounded-lg text-sm bg-purple-50 text-purple-800 border-l-4 border-purple-400 dark:bg-purple-900/30 dark:text-purple-300 dark:border-purple-600">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="font-bold text-purple-600 dark:text-purple-400">
+                    💡 Point important :
+                  </span>
+                </div>
+                <div className="text-gray-700 dark:text-gray-300 leading-relaxed" dangerouslySetInnerHTML={{ __html: feedback.overallExplanation }} />
+              </div>
+            )}
+
+            {/* Validate Incorrect Button */}
+            {feedback.isCorrect === false && onValidateIncorrect && (
+              <div className="text-center">
+                <button
+                  onClick={onValidateIncorrect}
+                  className="px-6 py-2 bg-gradient-to-r from-blue-600 to-emerald-600 hover:from-blue-700 hover:to-emerald-700 text-white text-sm font-medium rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl"
+                >
+                  🩺 Marquer comme compris
+                </button>
+              </div>
+            )}
+          </div>
+        )}
       </CardContent>
     </Card>
   );

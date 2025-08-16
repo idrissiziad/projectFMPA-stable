@@ -4,10 +4,12 @@ import { join } from 'path';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { filename: string } }
+  { params }: { params: Promise<{ filename: string }> }
 ) {
   try {
-    const { filename } = params;
+    const { filename } = await params;
+    const { searchParams } = new URL(request.url);
+    const yearFilter = searchParams.get('year');
     
     // Security check - prevent directory traversal
     if (filename.includes('..') || filename.includes('/') || filename.includes('\\')) {
@@ -21,9 +23,19 @@ export async function GET(
     
     try {
       const content = await readFile(filePath, 'utf-8');
-      const data = JSON.parse(content);
+      let data = JSON.parse(content);
       
-      return NextResponse.json({ questions: data });
+      // Filter by year if specified
+      if (yearFilter && Array.isArray(data)) {
+        data = data.filter((question: any) => question.YearAsked === yearFilter);
+      }
+      
+      return NextResponse.json({ 
+        questions: data,
+        filteredByYear: yearFilter || null,
+        totalQuestions: Array.isArray(JSON.parse(content)) ? JSON.parse(content).length : data.length,
+        filteredQuestions: data.length
+      });
     } catch (fileError) {
       return NextResponse.json(
         { error: `Fichier ${filename}.json non trouvé` },
@@ -31,7 +43,7 @@ export async function GET(
       );
     }
   } catch (error) {
-    console.error(`Error loading quiz ${params.filename}:`, error);
+    console.error(`Error loading quiz ${filename}:`, error);
     return NextResponse.json(
       { error: 'Impossible de charger le fichier de questions' },
       { status: 500 }

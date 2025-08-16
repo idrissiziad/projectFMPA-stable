@@ -2,8 +2,12 @@ import { NextRequest, NextResponse } from 'next/server';
 import { readdir, readFile } from 'fs/promises';
 import { join } from 'path';
 
-export async function GET(request: NextRequest) {
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ year: string }> }
+) {
   try {
+    const { year } = await params;
     const dataDir = join(process.cwd(), 'src', 'data');
     
     // Read all files in the data directory
@@ -14,21 +18,34 @@ export async function GET(request: NextRequest) {
       file.endsWith('.json') && !file.endsWith('.ts')
     );
     
-    // Get file info for each JSON file
+    // Get file info for each JSON file, filtering by year
     const fileInfoPromises = jsonFiles.map(async (filename) => {
       try {
         const filePath = join(dataDir, filename);
         const content = await readFile(filePath, 'utf-8');
         const data = JSON.parse(content);
         
+        // Check if this file contains questions from the specified year
+        let hasYearQuestions = false;
+        let years: string[] = [];
+        
+        if (Array.isArray(data)) {
+          // Extract unique years from all questions
+          years = [...new Set(data.map((q: any) => q.YearAsked).filter(Boolean))];
+          hasYearQuestions = years.includes(year);
+        }
+        
+        if (!hasYearQuestions) {
+          return null; // Skip files that don't contain the specified year
+        }
+        
         // If it's an array, get the count
         const questionCount = Array.isArray(data) ? data.length : 0;
         
         // Get first question to extract metadata if available
         let title = filename.replace('.json', '');
-        let description = 'Fichier de questions';
+        let description = `Fichier de questions - Année ${year}`;
         let category = 'Général';
-        let years: string[] = [];
         
         if (Array.isArray(data) && data.length > 0) {
           const firstQuestion = data[0];
@@ -39,8 +56,9 @@ export async function GET(request: NextRequest) {
             title = firstQuestion.Topic || firstQuestion.topic;
           }
           
-          // Extract unique years from all questions
-          years = [...new Set(data.map((q: any) => q.YearAsked).filter(Boolean))];
+          // Count questions specifically for this year
+          const yearQuestions = data.filter((q: any) => q.YearAsked === year);
+          description = `${yearQuestions.length} questions pour l'année ${year}`;
         }
         
         return {
@@ -55,25 +73,20 @@ export async function GET(request: NextRequest) {
         };
       } catch (error) {
         console.error(`Error reading file ${filename}:`, error);
-        return {
-          id: filename.replace('.json', ''),
-          name: filename.replace('.json', ''),
-          filename: filename.replace('.json', ''),
-          description: 'Fichier de questions (erreur de lecture)',
-          questionCount: 0,
-          category: 'Inconnu',
-          fileSize: 0
-        };
+        return null;
       }
     });
     
     const filesInfo = await Promise.all(fileInfoPromises);
     
-    return NextResponse.json({ files: filesInfo });
+    // Filter out null values (files that don't contain the specified year)
+    const filteredFiles = filesInfo.filter(file => file !== null);
+    
+    return NextResponse.json({ files: filteredFiles });
   } catch (error) {
-    console.error('Error listing files:', error);
+    console.error(`Error getting files for year ${year}:`, error);
     return NextResponse.json(
-      { error: 'Impossible de lister les fichiers' },
+      { error: `Impossible de récupérer les fichiers pour l'année ${year}` },
       { status: 500 }
     );
   }

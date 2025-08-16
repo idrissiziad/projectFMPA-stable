@@ -89,22 +89,6 @@ function AnswerFeedback({ feedback, onValidateIncorrect }: AnswerFeedbackProps) 
             🩺 Marquer comme compris
           </button>
         )}
-        {feedback.explanations && (
-          <div className={`mt-4 p-4 rounded-xl text-sm border-l-4 ${
-            feedback.isCorrect === true 
-              ? 'bg-green-50 text-green-800 border-green-400 dark:bg-green-900/30 dark:text-green-300 dark:border-green-600' 
-              : 'bg-red-50 text-red-800 border-red-400 dark:bg-red-900/30 dark:text-red-300 dark:border-red-600'
-          }`}>
-            <div className="flex items-center gap-2 mb-2">
-              <span className={`font-bold ${
-                feedback.isCorrect === true ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
-              }`}>
-                📚 Explications détaillées :
-              </span>
-            </div>
-            <div className="text-gray-700 dark:text-gray-300 leading-relaxed" dangerouslySetInnerHTML={{ __html: feedback.explanations.replace(/\n\n/g, '<br><br>') }} />
-          </div>
-        )}
         {feedback.overallExplanation && (
           <div className="mt-4 p-4 rounded-xl text-sm bg-blue-50 text-blue-800 border-l-4 border-blue-400 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-600">
             <div className="flex items-center gap-2 mb-2">
@@ -131,6 +115,7 @@ export function QuizComponent({ questions, quizFile, onBackToSelection }: QuizCo
   const [correctlyAnsweredQuestions, setCorrectlyAnsweredQuestions] = useState<Set<number>>(new Set());
   const [hasSavedProgress, setHasSavedProgress] = useState(false);
   const [hasVerifiedCurrentQuestion, setHasVerifiedCurrentQuestion] = useState(false);
+  const [showNavigator, setShowNavigator] = useState(false);
 
   const getQuestionsHash = (questions: Question[]) => {
     return questions.map(q => q.QuestionText).join('|');
@@ -412,7 +397,7 @@ export function QuizComponent({ questions, quizFile, onBackToSelection }: QuizCo
           break;
       }
       if (explanation.trim() !== '') {
-        explanations.push(`Pour ${choice}: ${explanation}`);
+        explanations.push(explanation);
       }
     });
 
@@ -472,43 +457,45 @@ export function QuizComponent({ questions, quizFile, onBackToSelection }: QuizCo
 
   return (
     <div className="container mx-auto p-4 space-y-6">
+      {/* Navigator Toggle Button */}
+      <div className="flex justify-between items-center">
+        <Button
+          onClick={() => setShowNavigator(!showNavigator)}
+          variant="outline"
+          size="sm"
+          className="mb-4"
+        >
+          {showNavigator ? '🔒 Masquer la navigation' : '🔓 Afficher la navigation'}
+        </Button>
+        <div className="text-sm text-gray-600 dark:text-gray-400">
+          Question {currentQuestionIndex + 1} sur {questions.length}
+        </div>
+      </div>
+
       {/* Question Navigator */}
-      <QuestionNavigator
-        questions={questions}
-        currentQuestionIndex={currentQuestionIndex}
-        userAnswers={userAnswers}
-        markedForReview={markedForReview}
-        incorrectUnvalidatedQuestions={incorrectUnvalidatedQuestions}
-        correctlyAnsweredQuestions={correctlyAnsweredQuestions}
-        onQuestionSelect={goToQuestion}
-        onToggleMark={toggleMarkForReview}
-      />
+      {showNavigator && (
+        <QuestionNavigator
+          questions={questions}
+          currentQuestionIndex={currentQuestionIndex}
+          userAnswers={userAnswers}
+          markedForReview={markedForReview}
+          incorrectUnvalidatedQuestions={incorrectUnvalidatedQuestions}
+          correctlyAnsweredQuestions={correctlyAnsweredQuestions}
+          onQuestionSelect={goToQuestion}
+          onToggleMark={toggleMarkForReview}
+        />
+      )}
 
       {/* Progress Bar */}
-      <Card className="w-full bg-gradient-to-r from-blue-50 to-emerald-50 dark:from-blue-900/20 dark:to-emerald-900/20 border-2 border-blue-200 dark:border-blue-700 shadow-md">
+      <Card className="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm">
         <CardContent className="pt-6">
-          <div className="space-y-3">
-            <div className="flex justify-between text-sm">
-              <span className="font-medium text-blue-700 dark:text-blue-300">
-                Question {currentQuestionIndex + 1} sur {questions.length}
-              </span>
-              <span className="font-medium text-emerald-700 dark:text-emerald-300">
-                {getAnsweredCount()} réponse(s) sur {questions.length}
-              </span>
-            </div>
-            <div className="relative">
-              <Progress value={progress} className="w-full h-3 bg-blue-100 dark:bg-blue-900/30" />
-              <div className="absolute inset-0 flex items-center justify-center">
-                <span className="text-xs font-semibold text-blue-800 dark:text-blue-200">
-                  {Math.round(progress)}%
-                </span>
-              </div>
-            </div>
+          <div className="relative">
+            <Progress value={progress} className="w-full h-2 bg-gray-100 dark:bg-gray-700" />
           </div>
         </CardContent>
       </Card>
 
-      {/* Question Card */}
+      {/* Question Card with Integrated Feedback */}
       <QuestionCard
         question={currentQuestion}
         questionNumber={currentQuestionIndex + 1}
@@ -516,19 +503,9 @@ export function QuizComponent({ questions, quizFile, onBackToSelection }: QuizCo
         userAnswers={Array.isArray(userAnswers.get(currentQuestionIndex)) ? userAnswers.get(currentQuestionIndex) : []}
         onAnswerChange={handleAnswerChange}
         showResult={showFeedback}
+        feedback={showFeedback ? getCurrentAnswerFeedback() : null}
+        onValidateIncorrect={handleValidateIncorrect}
       />
-
-      {/* Feedback Panel */}
-      {showFeedback && (
-        <Card className="w-full dark:bg-gray-800">
-          <CardContent className="pt-6">
-            <AnswerFeedback 
-              feedback={getCurrentAnswerFeedback()} 
-              onValidateIncorrect={handleValidateIncorrect}
-            />
-          </CardContent>
-        </Card>
-      )}
 
       {/* Navigation Buttons */}
       <div className="flex justify-between items-center">

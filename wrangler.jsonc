@@ -1,0 +1,14 @@
+{
+  "name": "projectfmpa",
+  "compatibility_date": "2025-08-16",
+  "main": "worker.ts",
+  "assets": {
+    "directory": "./.next/static"
+  },
+  "build": {
+    "command": "npm run build"
+  },
+  "vars": {
+    "NODE_ENV": "production"
+  }
+}
