@@ -22,7 +22,12 @@ interface AnswerFeedbackProps {
     isCorrect: boolean | null;
     userChoices: string[];
     correctChoices: string[];
-    explanations: string;
+    allChoiceExplanations: {
+      choice: string;
+      explanation: string;
+      isCorrect: boolean | null;
+      isSelected: boolean;
+    }[];
     overallExplanation: string;
   } | null;
   onValidateIncorrect?: () => void;
@@ -34,14 +39,14 @@ function AnswerFeedback({ feedback, onValidateIncorrect }: AnswerFeedbackProps) 
   return (
     <div className="space-y-4">
       <div className={`text-center p-6 rounded-xl border-2 ${
-        feedback.isCorrect === true 
-          ? 'bg-green-50 border-green-300 dark:bg-green-900/20 dark:border-green-600' 
+        feedback.isCorrect === true
+          ? 'bg-green-50 border-green-300 dark:bg-green-900/20 dark:border-green-600'
           : 'bg-red-50 border-red-300 dark:bg-red-900/20 dark:border-red-600'
       }`}>
         <div className="flex items-center justify-center gap-3 mb-3">
           <div className={`w-12 h-12 rounded-full flex items-center justify-center text-2xl font-bold ${
-            feedback.isCorrect === true 
-              ? 'bg-green-500 text-white' 
+            feedback.isCorrect === true
+              ? 'bg-green-500 text-white'
               : 'bg-red-500 text-white'
           }`}>
             {feedback.isCorrect === true ? '✓' : '✗'}
@@ -79,6 +84,37 @@ function AnswerFeedback({ feedback, onValidateIncorrect }: AnswerFeedbackProps) 
               </div>
             )}
           </div>
+        </div>
+        
+        {/* All Choice Explanations */}
+        <div className="mt-6 space-y-4">
+          <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">Explications détaillées :</h3>
+          {feedback.allChoiceExplanations.map((choiceExplanation, index) => (
+            <div
+              key={index}
+              className={`p-4 rounded-lg border-l-4 ${
+                choiceExplanation.isCorrect === true
+                  ? 'bg-green-50 text-green-800 border-green-400 dark:bg-green-900/30 dark:text-green-300 dark:border-green-600'
+                  : 'bg-red-50 text-red-800 border-red-400 dark:bg-red-900/30 dark:text-red-300 dark:border-red-600'
+              }`}
+            >
+              <div className="flex items-center gap-2 mb-2">
+                <span className={`font-bold ${
+                  choiceExplanation.isCorrect === true
+                    ? 'text-green-600 dark:text-green-400'
+                    : 'text-red-600 dark:text-red-400'
+                }`}>
+                  {choiceExplanation.isCorrect === true ? '✓' : '✗'} Option {choiceExplanation.choice}:
+                </span>
+                {choiceExplanation.isSelected && (
+                  <span className="text-xs px-2 py-1 rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300">
+                    Votre sélection
+                  </span>
+                )}
+              </div>
+              <div className="text-gray-700 dark:text-gray-300 leading-relaxed" dangerouslySetInnerHTML={{ __html: choiceExplanation.explanation }} />
+            </div>
+          ))}
         </div>
         
         {feedback.isCorrect === false && onValidateIncorrect && (
@@ -388,29 +424,45 @@ export function QuizComponent({ questions, quizFile, onBackToSelection }: QuizCo
     const isCorrect = userChoicesSorted.length === correctChoicesSorted.length &&
                      userChoicesSorted.every((choice, i) => choice === correctChoicesSorted[i]);
 
-    // Get explanations for selected choices
-    const explanations: string[] = [];
-    userChoices.forEach(choice => {
+    // Get explanations for all choices (both user selected and not selected)
+    const allChoiceExplanations: { choice: string; explanation: string; isCorrect: boolean | null; isSelected: boolean }[] = [];
+    
+    // Process all choices A through E
+    ['A', 'B', 'C', 'D', 'E'].forEach(choiceId => {
       let explanation = '';
-      switch (choice) {
+      let isCorrectChoice = false;
+      
+      switch (choiceId) {
         case 'A':
           explanation = question.Choice_A_Explanation || '';
+          isCorrectChoice = question.Choice_A_isCorrect === true;
           break;
         case 'B':
           explanation = question.Choice_B_Explanation || '';
+          isCorrectChoice = question.Choice_B_isCorrect === true;
           break;
         case 'C':
           explanation = question.Choice_C_Explanation || '';
+          isCorrectChoice = question.Choice_C_isCorrect === true;
           break;
         case 'D':
           explanation = question.Choice_D_Explanation || '';
+          isCorrectChoice = question.Choice_D_isCorrect === true;
           break;
         case 'E':
           explanation = question.Choice_E_Explanation || '';
+          isCorrectChoice = question.Choice_E_isCorrect === true;
           break;
       }
-      if (explanation.trim() !== '') {
-        explanations.push(explanation);
+      
+      // Only include if there's an explanation or if it's a correct choice
+      if (explanation.trim() !== '' || isCorrectChoice) {
+        allChoiceExplanations.push({
+          choice: choiceId,
+          explanation: explanation.trim() !== '' ? explanation : 'Aucune explication disponible',
+          isCorrect: isCorrectChoice,
+          isSelected: userChoices.includes(choiceId)
+        });
       }
     });
 
@@ -418,7 +470,7 @@ export function QuizComponent({ questions, quizFile, onBackToSelection }: QuizCo
       isCorrect,
       userChoices,
       correctChoices,
-      explanations: explanations.join('\n\n'),
+      allChoiceExplanations,
       overallExplanation: question.OverallExplanation || ''
     };
   };

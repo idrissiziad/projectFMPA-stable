@@ -20,7 +20,12 @@ interface QuestionCardProps {
     isCorrect: boolean | null;
     userChoices: string[];
     correctChoices: string[];
-    explanations: string;
+    allChoiceExplanations: {
+      choice: string;
+      explanation: string;
+      isCorrect: boolean | null;
+      isSelected: boolean;
+    }[];
     overallExplanation: string;
   } | null;
   onValidateIncorrect?: () => void;
@@ -46,11 +51,11 @@ export function QuestionCard({
 
   // Create original choices array
   const createOriginalChoices = (): Choice[] => [
-    { id: 'A', text: question.Choice_A_Text || '', isCorrect: question.Choice_A_isCorrect, explanation: question.Choice_A_Explanation || '' },
-    { id: 'B', text: question.Choice_B_Text || '', isCorrect: question.Choice_B_isCorrect, explanation: question.Choice_B_Explanation || '' },
-    { id: 'C', text: question.Choice_C_Text || '', isCorrect: question.Choice_C_isCorrect, explanation: question.Choice_C_Explanation || '' },
-    { id: 'D', text: question.Choice_D_Text || '', isCorrect: question.Choice_D_isCorrect, explanation: question.Choice_D_Explanation || '' },
-    { id: 'E', text: question.Choice_E_Text || '', isCorrect: question.Choice_E_isCorrect, explanation: question.Choice_E_Explanation || '' },
+    { id: 'A', text: question.Choice_A_Text || '', isCorrect: question.Choice_A_isCorrect ?? null, explanation: question.Choice_A_Explanation || '' },
+    { id: 'B', text: question.Choice_B_Text || '', isCorrect: question.Choice_B_isCorrect ?? null, explanation: question.Choice_B_Explanation || '' },
+    { id: 'C', text: question.Choice_C_Text || '', isCorrect: question.Choice_C_isCorrect ?? null, explanation: question.Choice_C_Explanation || '' },
+    { id: 'D', text: question.Choice_D_Text || '', isCorrect: question.Choice_D_isCorrect ?? null, explanation: question.Choice_D_Explanation || '' },
+    { id: 'E', text: question.Choice_E_Text || '', isCorrect: question.Choice_E_isCorrect ?? null, explanation: question.Choice_E_Explanation || '' },
   ].filter(choice => choice.text && choice.text.trim() !== '');
 
   // Function to shuffle array using Fisher-Yates algorithm
@@ -182,40 +187,69 @@ export function QuestionCard({
                 </Label>
               </div>
               
-              {/* Choice explanation - Integrated */}
-              {showResult && safeUserAnswers.includes(choice.id) && choice.explanation && choice.explanation.trim() !== '' && (
+              {/* Choice explanation - Always show when showing results */}
+              {showResult && choice.explanation && choice.explanation.trim() !== '' && (
                 <div className={`p-3 rounded-lg text-sm border-l-4 ${
-                  choice.isCorrect === true 
-                    ? 'bg-green-50 text-green-800 border-green-400 dark:bg-green-900/30 dark:text-green-300 dark:border-green-600' 
-                    : 'bg-red-50 text-red-800 border-red-400 dark:bg-red-900/30 dark:text-red-300 dark:border-red-600'
+                  choice.isCorrect === true
+                    ? (safeUserAnswers.includes(choice.id)
+                        ? 'bg-green-50 text-green-800 border-green-400 dark:bg-green-900/30 dark:text-green-300 dark:border-green-600'
+                        : 'bg-yellow-50 text-yellow-800 border-yellow-400 dark:bg-yellow-900/30 dark:text-yellow-300 dark:border-yellow-600')
+                    : (safeUserAnswers.includes(choice.id)
+                        ? 'bg-red-50 text-red-800 border-red-400 dark:bg-red-900/30 dark:text-red-300 dark:border-red-600'
+                        : 'bg-gray-50 text-gray-800 border-gray-400 dark:bg-gray-900/30 dark:text-gray-300 dark:border-gray-600')
                 }`}>
-                  <div className="text-gray-700 dark:text-gray-300" dangerouslySetInnerHTML={{ __html: choice.explanation.replace(/\n/g, '<br>') }} />
-                </div>
-              )}
-              
-              {/* Missed correct choice explanation */}
-              {showResult && !safeUserAnswers.includes(choice.id) && choice.isCorrect === true && choice.explanation && choice.explanation.trim() !== '' && (
-                <div className="p-3 rounded-lg text-sm bg-yellow-50 text-yellow-800 border-l-4 border-yellow-400 dark:bg-yellow-900/30 dark:text-yellow-300 dark:border-yellow-600">
-                  <div className="text-gray-700 dark:text-gray-300" dangerouslySetInnerHTML={{ __html: choice.explanation.replace(/\n/g, '<br>') }} />
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className={`font-bold ${
+                      choice.isCorrect === true
+                        ? (safeUserAnswers.includes(choice.id)
+                            ? 'text-green-600 dark:text-green-400'
+                            : 'text-yellow-600 dark:text-yellow-400')
+                        : (safeUserAnswers.includes(choice.id)
+                            ? 'text-red-600 dark:text-red-400'
+                            : 'text-gray-600 dark:text-gray-400')
+                    }`}>
+                      {choice.isCorrect === true ? '✓' : '✗'} Option {choice.id}:
+                    </span>
+                    {safeUserAnswers.includes(choice.id) && (
+                      <span className="text-xs px-2 py-1 rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300">
+                        Votre sélection
+                      </span>
+                    )}
+                  </div>
+                  <div className="text-gray-700 dark:text-gray-300 leading-relaxed" dangerouslySetInnerHTML={{ __html: choice.explanation.replace(/\n/g, '<br>') }} />
                 </div>
               )}
             </div>
           ))}
         </div>
 
+        {/* Overall Explanation - Always show when showing results */}
+        {showResult && question.OverallExplanation && (
+          <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
+            <div className="p-4 rounded-lg text-sm bg-purple-50 text-purple-800 border-l-4 border-purple-400 dark:bg-purple-900/30 dark:text-purple-300 dark:border-purple-600">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="font-bold text-purple-600 dark:text-purple-400">
+                  💡 Point important :
+                </span>
+              </div>
+              <div className="text-gray-700 dark:text-gray-300 leading-relaxed" dangerouslySetInnerHTML={{ __html: question.OverallExplanation }} />
+            </div>
+          </div>
+        )}
+
         {/* Integrated Feedback Section */}
         {feedback && (
           <div className="space-y-4 pt-4 border-t border-gray-200 dark:border-gray-700">
             {/* Result Summary */}
             <div className={`text-center p-4 rounded-lg border ${
-              feedback.isCorrect === true 
-                ? 'bg-green-50 border-green-200 dark:bg-green-900/20 dark:border-green-600' 
+              feedback.isCorrect === true
+                ? 'bg-green-50 border-green-200 dark:bg-green-900/20 dark:border-green-600'
                 : 'bg-red-50 border-red-200 dark:bg-red-900/20 dark:border-red-600'
             }`}>
               <div className="flex items-center justify-center gap-2">
                 <div className={`w-8 h-8 rounded-full flex items-center justify-center text-lg font-bold ${
-                  feedback.isCorrect === true 
-                    ? 'bg-green-500 text-white' 
+                  feedback.isCorrect === true
+                    ? 'bg-green-500 text-white'
                     : 'bg-red-500 text-white'
                 }`}>
                   {feedback.isCorrect === true ? '✓' : '✗'}

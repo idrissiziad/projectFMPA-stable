@@ -36,17 +36,17 @@ export function QuizResults({ results, questions, onRestart, userAnswers, onBack
       {/* Results Summary */}
       <Card className="w-full">
         <CardHeader className="text-center">
-          <CardTitle className="text-3xl font-bold">Résultats Détaillés</CardTitle>
+          <CardTitle className="text-3xl font-bold text-gray-900 dark:text-white">Résultats Détaillés</CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="text-center space-y-4">
             <div className={`text-6xl font-bold ${getScoreColor(results.score)}`}>
               {results.score}%
             </div>
-            <div className="text-xl text-gray-600">
+            <div className="text-xl text-gray-600 dark:text-gray-300">
               {getScoreMessage(results.score)}
             </div>
-            <div className="text-lg text-gray-600">
+            <div className="text-lg text-gray-600 dark:text-gray-300">
               {results.correctAnswers} réponses correctes sur {results.totalQuestions}
             </div>
           </div>
@@ -57,7 +57,7 @@ export function QuizResults({ results, questions, onRestart, userAnswers, onBack
         {/* Question List */}
         <Card className="lg:col-span-1">
           <CardHeader>
-            <CardTitle>Liste des Questions</CardTitle>
+            <CardTitle className="text-gray-900 dark:text-white">Liste des Questions</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-2 max-h-96 overflow-y-auto">
@@ -72,16 +72,16 @@ export function QuizResults({ results, questions, onRestart, userAnswers, onBack
                     onClick={() => setSelectedQuestionIndex(index)}
                     className={`w-full text-left p-3 rounded-lg border transition-colors ${
                       selectedQuestionIndex === index
-                        ? 'border-blue-500 bg-blue-50'
-                        : 'border-gray-200 hover:border-gray-300'
+                        ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30'
+                        : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
                     }`}
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex-1">
-                        <div className="font-medium text-sm">
+                        <div className="font-medium text-sm text-gray-900 dark:text-gray-100">
                           Question {index + 1}
                         </div>
-                        <div className="text-xs text-gray-500 mt-1">
+                        <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                           {question.Subtopic}
                         </div>
                       </div>
@@ -114,6 +114,7 @@ export function QuizResults({ results, questions, onRestart, userAnswers, onBack
             userAnswers={userAnswers.get(selectedQuestionIndex) || []}
             onAnswerChange={() => {}} // No-op for results view
             showResult={true}
+            feedback={null} // We don't need feedback in results view as explanations are shown directly in QuestionCard
           />
         </div>
       </div>
