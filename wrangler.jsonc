@@ -1,13 +1,7 @@
 {
   "name": "projectfmpa",
   "compatibility_date": "2025-08-16",
-  "main": "worker.ts",
-  "assets": {
-    "directory": "./.next/static"
-  },
-  "build": {
-    "command": "npm run build"
-  },
+  "main": ".wrangler/tmp/bundle.js",
   "vars": {
     "NODE_ENV": "production"
   }
