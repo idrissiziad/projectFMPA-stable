@@ -262,17 +262,6 @@ export function QuestionCard({
               </div>
             </div>
 
-            {/* Overall Explanation */}
-            {feedback.overallExplanation && (
-              <div className="p-4 rounded-lg text-sm bg-purple-50 text-purple-800 border-l-4 border-purple-400 dark:bg-purple-900/30 dark:text-purple-300 dark:border-purple-600">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="font-bold text-purple-600 dark:text-purple-400">
-                    💡 Point important :
-                  </span>
-                </div>
-                <div className="text-gray-700 dark:text-gray-300 leading-relaxed" dangerouslySetInnerHTML={{ __html: feedback.overallExplanation }} />
-              </div>
-            )}
 
             {/* Validate Incorrect Button */}
             {feedback.isCorrect === false && onValidateIncorrect && (
