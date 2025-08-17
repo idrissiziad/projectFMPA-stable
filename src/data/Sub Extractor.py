@@ -45,7 +45,7 @@ def extract_unique_subtopics_from_file(filepath):
 #    Let's assume your file is named 'data.json'.
 
 # 3. Replace 'data.json' with the actual name of your file.
-json_file_path = 'Physiologie Digestive (Février 2025).json' 
+json_file_path = 'Bactériologie (Février 2025).json' 
 unique_subtopics = extract_unique_subtopics_from_file(json_file_path)
 
 # 4. Print the results.

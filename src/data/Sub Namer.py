@@ -6,7 +6,7 @@ import json
 
 # The name of your JSON file.
 # This should be the correct name from your last attempt.
-INPUT_FILENAME = 'Physiologie Digestive (Février 2025).json'
+INPUT_FILENAME = 'Bactériologie (Février 2025).json'
 
 # The name for the new, updated JSON file that will be created.
 OUTPUT_FILENAME = 'updated_questions_file.json'
@@ -15,14 +15,19 @@ OUTPUT_FILENAME = 'updated_questions_file.json'
 # The script will find the "key" on the left and replace it with the "value" on the right.
 # For example, it will find any instance of "ABSORPTION INTESTINALE" and change it to "Absorption Intestinale".
 SUBTOPIC_MAP = {
-    "ABSORPTION INTESTINALE": "Absorption Intestinale",
-    "Généralités sur le Tube Digestif": "Généralités sur le Tube Digestif",
-    "La déglutition et motricité œsophagienne": "Déglutition et Motricité Œsophagienne",
-    "La motricité gastrique": "Motricité Gastrique",
-    "La sécrétion biliaire": "Sécrétion Biliaire",
-    "La sécrétion gastrique": "Sécrétion Gastrique",
-    "La sécrétion pancréatique": "Sécrétion Pancréatique",
-    "La sécrétion salivaire": "Sécrétion Salivaire"
+"Anatomie structurale et fonctionnelle Des bactéries": "Anatomie Structurale et Fonctionnelle des Bactéries",
+"Antibiotiques : mécanismes d’action mécanismes de résistances": "Antibiotiques : Mécanismes d’Action et Mécanismes de Résistances",
+"Campylobacter": "Campylobacter",
+"Entérobactéries": "Entérobactéries",
+"Génétique bactérienne": "Génétique Bactérienne",
+"Helicobacter pylori": "Helicobacter pylori",
+"Les Mycobactéries": "Mycobactéries",
+"Les staphylocoques": "Staphylocoques",
+"Les streptocoques et Entérocoques": "Streptocoques et Entérocoques",
+"Les tréponèmes pathogènes": "Tréponèmes Pathogènes",
+"Pseudomonas aeruginosa Acinetobacter": "Pseudomonas aeruginosa et Acinetobacter",
+"Relations hôte -Bactéries Pouvoir pathogène": "Relations Hôte-Bactéries et Pouvoir Pathogène",
+"Vibrions cholériques": "Vibrions Cholériques"
 }
 
 
