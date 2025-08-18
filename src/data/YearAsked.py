@@ -52,10 +52,10 @@ def update_year_asked(input_file, output_file, new_year):
 #    ]
 
 # 2. Set the desired new year.
-new_year_value = "Février 2025 (Normale)"
+new_year_value = "Juin 2025 (Normale)"
 
 # 3. Specify the input and output file names.
-input_filename = 'Bactériologie (Février 2025).json'
+input_filename = 'Virologie (Juin 2025).json'
 output_filename = 'output.json'
 
 # 4. Call the function to perform the update.

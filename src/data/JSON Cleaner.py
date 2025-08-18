@@ -2,7 +2,7 @@ import json
 
 # --- Configuration ---
 # Path to your original JSON file that has garbled characters
-input_file_path = 'Bactériologie (Février 2025).json'
+input_file_path = 'output.json'
 
 # Path for the new, cleaned JSON file that will be created
 output_file_path = 'cleaned_data.json'
