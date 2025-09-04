@@ -210,9 +210,9 @@
     "YearAsked": "Non spécifié"
   },
   {
-    "Choice_A_Explanation": "L'épithélium de la vésicule est bien simple, mais les cellules parafolliculaires (cellules C) sont situées à la base de l'épithélium, à l'intérieur de la membrane basale, sans jamais atteindre la lumière de la vésicule (la colloïde).<br>L'épithélium qui borde la colloïde est donc constitué uniquement des cellules principales (folliculaires).",
+    "Choice_A_Explanation": "",
     "Choice_A_Text": "Sont formées d'un épithélium simple renfermant des cellules principales et parafolliculaires.",
-    "Choice_A_isCorrect": false,
+    "Choice_A_isCorrect": true,
     "Choice_B_Explanation": "La colloïde est riche en glycoprotéines, notamment la thyroglobuline.<br>Cette richesse en glucides lui confère une forte affinité pour la coloration au PAS (Periodic Acid-Schiff), qui la colore en rouge brique.",
     "Choice_B_Text": "La colloïde prend une coloration rouge brique au PAS.",
     "Choice_B_isCorrect": true,
