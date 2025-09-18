@@ -84,9 +84,9 @@
     "YearAsked": "Non spécifié"
   },
   {
-    "Choice_A_Explanation": "La paroi du tube digestif est classiquement formée de 4 couches principales : la muqueuse, la sous-muqueuse, la musculeuse et la séreuse (ou adventice).",
+    "Choice_A_Explanation": "",
     "Choice_A_Text": "La paroi du tube digestif est formée de 5 couches.",
-    "Choice_A_isCorrect": false,
+    "Choice_A_isCorrect": true,
     "Choice_B_Explanation": "La muqueuse buccale, soumise à des contraintes mécaniques, est protégée par un épithélium pavimenteux stratifié non kératinisé (EPSNK), qui est résistant.",
     "Choice_B_Text": "La muqueuse buccale est formée d'un EPSNK.",
     "Choice_B_isCorrect": true,
@@ -116,7 +116,7 @@
     "Choice_C_isCorrect": true,
     "Choice_D_Explanation": "La muqueuse fundique est subdivisée en cryptes gastriques (ou fovéoles) à la surface et en glandes fundiques en profondeur.<br>Un infiltrat lymphoïde n'est pas une subdivision structurelle standard.",
     "Choice_D_Text": "La muqueuse de l'estomac fundique est subdivisée en cryptes, glandes et infiltrat lymphoïde.",
-    "Choice_D_isCorrect": false,
+    "Choice_D_isCorrect": true,
     "Choice_E_Explanation": "",
     "Choice_E_Text": "",
     "Choice_E_isCorrect": false,
